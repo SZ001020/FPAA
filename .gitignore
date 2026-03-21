@@ -1,0 +1,36 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual envs and local env files
+.venv/
+venv/
+env/
+*.env
+
+# Training artifacts and logs
+experiments/fpaa/logs/
+logs/
+*.log
+
+# Large datasets and generated data
+dataset/
+dataset
+
+# Model weights/checkpoints
+weights/
+pretrain/
+**/pretrain/
+**/weights/
+*.pth
+*.pt
+*.ckpt
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
