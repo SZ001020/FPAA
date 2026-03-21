@@ -1,0 +1,6 @@
+run_name,backbone,direction,seed,quality_mode,use_lite_da
+A0_no_filter,MFNet,R2U,3407,none,false
+A1_conf_only,MFNet,R2U,3407,conf,false
+A2_conf_boundary,MFNet,R2U,3407,conf_boundary,false
+A3_full_fpaa,MFNet,R2U,3407,full,false
+A4_full_fpaa_liteda,MFNet,R2U,3407,full,true
