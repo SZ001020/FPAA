@@ -22,6 +22,14 @@ EXP_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 LOG_DIR="${EXP_ROOT}/logs"
 mkdir -p "$LOG_DIR"
 
+DATASET_ROOT="${DATASET_ROOT:-${PROJECT_ROOT}/dataset}"
+LOVEDA_ROOT="${LOVEDA_ROOT:-${DATASET_ROOT}/LoveDA/Train}"
+export DATASET_ROOT
+export LOVEDA_ROOT
+if [[ "$BACKBONE" == "SAM_RS" ]]; then
+  export SAM_RS_DATASET="${SAM_RS_DATASET:-Urban}"
+fi
+
 RUN_ID="LoveDA_${DIRECTION}_${BACKBONE}_s${SEED}_$(date +%Y%m%d_%H%M%S)"
 LOG_PATH="${LOG_DIR}/${RUN_ID}.log"
 

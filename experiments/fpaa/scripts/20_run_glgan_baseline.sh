@@ -16,6 +16,11 @@ EXP_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 LOG_DIR="${EXP_ROOT}/logs"
 mkdir -p "$LOG_DIR"
 
+DATASET_ROOT="${DATASET_ROOT:-${PROJECT_ROOT}/dataset}"
+GLGAN_LOVEDA_ROOT="${GLGAN_LOVEDA_ROOT:-${DATASET_ROOT}/LoveDA/Train}"
+export DATASET_ROOT
+export GLGAN_LOVEDA_ROOT
+
 RUN_ID="LoveDA_${DIRECTION}_GLGAN_s${SEED}_$(date +%Y%m%d_%H%M%S)"
 LOG_PATH="${LOG_DIR}/${RUN_ID}.log"
 
