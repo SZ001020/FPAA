@@ -1,7 +1,7 @@
 import numpy as np
 from skimage import io
 from glob import glob
-from tqdm import tqdm_notebook as tqdm
+from tqdm.auto import tqdm
 from sklearn.metrics import confusion_matrix
 import random
 import itertools
@@ -153,7 +153,7 @@ def test(test_ids, all=False, stride=WINDOW_SIZE[0], batch_size=BATCH_SIZE, wind
                 # Build the tensor
                 image_patches = [np.copy(img[x:x + w, y:y + h]).transpose((2, 0, 1)) for x, y, w, h in coords]
                 image_patches = np.asarray(image_patches)
-                image_patches = Variable(torch.from_numpy(image_patches).cuda(), volatile=True)
+                image_patches = torch.from_numpy(image_patches).cuda()
 
                 # Do the inference
                 _, pred2, _, _= model(image_patches)

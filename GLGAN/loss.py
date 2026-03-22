@@ -23,7 +23,7 @@ def cross_entropy_2d(predict, target):
         return Variable(torch.zeros(1))
     predict = predict.transpose(1, 2).transpose(2, 3).contiguous()
     predict = predict[target_mask.view(n, h, w, 1).repeat(1, 1, 1, c)].view(-1, c)
-    loss = F.cross_entropy(predict, target, size_average=True)
+    loss = F.cross_entropy(predict, target, reduction='mean')
     return loss
 
 

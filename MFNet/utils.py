@@ -17,7 +17,8 @@ WINDOW_SIZE = (256, 256) # Patch size
 
 STRIDE = 32 # Stride for testing
 IN_CHANNELS = 3 # Number of input channels (e.g. RGB)
-FOLDER = "/media/lscsc/nas/xianping/ISPRS_dataset/" # Replace with your "/path/to/the/ISPRS/dataset/folder/"
+FOLDER = os.environ.get("DATASET_ROOT", "/media/lscsc/nas/xianping/ISPRS_dataset/")
+FOLDER = FOLDER.rstrip("/") + "/"
 BATCH_SIZE = 10
 # BATCH_SIZE = 4 # For backbone ViT-Huge
 
@@ -29,12 +30,12 @@ MODE = 'Train'
 FTune = 'Adapter'
 # FTune = 'LoRA'
 
-DATASET = 'Vaihingen'
+DATASET = os.environ.get("MFNET_DATASET", 'Vaihingen')
 # DATASET = 'Potsdam'
 # DATASET = 'Hunan'
 IF_SAM = True
 # IF_SAM = False
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = os.environ.get("CUDA_VISIBLE_DEVICES", "0")
 
 LABELS = ["roads", "buildings", "low veg.", "trees", "cars", "clutter"] # Label names
 N_CLASSES = len(LABELS) # Number of classes

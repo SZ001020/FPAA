@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import os
 from einops import rearrange, repeat
 
 from timm.models.layers import DropPath, to_2tuple, trunc_normal_
@@ -328,11 +329,15 @@ class UNetFormer(nn.Module):
                  decode_channels=64,
                  dropout=0.1,
                  backbone_name='swsl_resnet18',
-                 pretrained=True,
+                 pretrained=None,
                  window_size=8,
                  num_classes=6
                  ):
         super().__init__()
+
+        if pretrained is None:
+            # Default to offline-safe behavior; set SAM_RS_PRETRAINED=1 to force pretrained download.
+            pretrained = os.environ.get("SAM_RS_PRETRAINED", "0") == "1"
 
         self.backbone = timm.create_model(backbone_name, features_only=True, output_stride=32,
                                           out_indices=(1, 2, 3, 4), pretrained=pretrained)

@@ -59,25 +59,60 @@ def SAMAug(tI , mask_generator):
     BoundaryPrior_output = BoundaryPrior_output.astype(np.uint8) 
     return BoundaryPrior_output,Objects_first_few  
 
-directory_name='./loveDA/Urban/images_png/'
+def ensure_trailing_slash(path):
+    return path.rstrip("/") + "/"
 
-img_list=[f for f in os.listdir(directory_name)]
-img_list=sorted(img_list)
-start_time=time.time()
-for img_input in img_list:
-    if img_input.endswith('.png'):
-        img_name=img_input.split(".")[0]
-        image_type=".png"
-        image = Image.open(directory_name+img_input)
-        image = np.array(image)
-        print(type(image))
-        print(image.shape)
-        BoundaryPrior_output, Objects_first_few=SAMAug(image, mask_generator)
-        image_boundary = Image.fromarray(BoundaryPrior_output)
-        Objects_first_few = Objects_first_few.astype(np.uint8)
-        image_objects = Image.fromarray(Objects_first_few)
-        image_boundary.save("./SAM/loveDA_obj_data/"+img_name+'_Boundary'+image_type)
-        image_objects.save("./SAM/loveDA_obj_data/"+img_name+'_objects'+image_type)
-end_time = time.time()
-run_time = end_time - start_time
-print(f"Runing time: {run_time} second.")
+
+def process_domain(domain_root, mask_generator):
+    images_dir = os.path.join(domain_root, "images_png")
+    boundary_dir = os.path.join(domain_root, "boundary_pngs")
+    object_dir = os.path.join(domain_root, "object_pngs")
+
+    if not os.path.isdir(images_dir):
+        raise FileNotFoundError(f"images_png not found: {images_dir}")
+
+    os.makedirs(boundary_dir, exist_ok=True)
+    os.makedirs(object_dir, exist_ok=True)
+
+    img_list = sorted([f for f in os.listdir(images_dir) if f.endswith('.png')])
+    print(f"Domain root: {domain_root}")
+    print(f"Found images: {len(img_list)}")
+
+    start_time = time.time()
+    for i, img_input in enumerate(img_list, 1):
+        img_name = img_input.split(".")[0]
+        image = np.array(Image.open(os.path.join(images_dir, img_input)))
+
+        result = SAMAug(image, mask_generator)
+        if result is None:
+            # Fallback to all-zero maps when SAM returns no masks.
+            h, w = image.shape[:2]
+            boundary = np.zeros((h, w), dtype=np.uint8)
+            objects = np.zeros((h, w), dtype=np.uint8)
+        else:
+            boundary, objects = result
+            objects = objects.astype(np.uint8)
+
+        Image.fromarray(boundary).save(os.path.join(boundary_dir, f"{img_name}_Boundary.png"))
+        Image.fromarray(objects).save(os.path.join(object_dir, f"{img_name}_objects.png"))
+
+        if i % 50 == 0 or i == len(img_list):
+            print(f"[{i}/{len(img_list)}] processed")
+
+    run_time = time.time() - start_time
+    print(f"Finished {domain_root} in {run_time:.2f}s")
+
+
+if __name__ == "__main__":
+    # Example:
+    # LOVEDA_ROOT=/root/FPAA/dataset/LoveDA/Train python SAM_utils.py
+    loveDA_root = os.environ.get("LOVEDA_ROOT", "./loveDA/Train")
+    loveDA_root = ensure_trailing_slash(loveDA_root)
+    domains = os.environ.get("LOVEDA_DOMAINS", "Urban").split(",")
+    domains = [d.strip() for d in domains if d.strip()]
+
+    print(f"LOVEDA_ROOT={loveDA_root}")
+    print(f"LOVEDA_DOMAINS={domains}")
+
+    for domain in domains:
+        process_domain(os.path.join(loveDA_root, domain), mask_generator)
